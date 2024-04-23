@@ -15,8 +15,7 @@ public class Main {
         String status;//new customer with ref will be "good customer" or new customer
         String reference; //if have reference from other auction house then auction house name or null
         // Constructor to initialize fields
-        public Customer(String bidder_number, String name, String status, String reference) {
-            this.bidder_number = bidder_number;
+        public Customer(String bidder_number, String name, String status, String reference) {this.bidder_number = bidder_number;
             this.name = name;
             this.status = status;
             this.reference = reference;
@@ -24,42 +23,49 @@ public class Main {
     }
     //Auction Product details
     public static class Product{
-        String id;
         int starting_price;
         int bid_rise;
-        public Product(String id, int starting_price, int bid_rise) {
-            this.id = id; // Assigning the provided ID
+        public Product(int starting_price, int bid_rise) {
             this.starting_price = starting_price; // Assigning the provided starting price
             this.bid_rise = bid_rise; // Assigning the provided bid rise increment
         }
     }
     //DB for customers {OAS : OAS}
-    public HashMap<String, Customer> CustomerDB = new HashMap<>();
+    public static HashSet<Customer> customerDB = new HashSet<>();
     //Commission Bids {C: C,A}
     public static List<Map<String, Object>> commissionBids = new ArrayList<>();
     //Online Bids {C: C,A}
     public static List<Map<String, Object>> liveBids = new ArrayList<>();
     //Products Details{OAS : OAS}
-    public static HashMap<Integer, Integer> ProductDB = new HashMap<>();
+    public static HashMap<String, Product> productDB = new HashMap<>();
     //Auction Result
-    public static HashSet<String> AuctionResult = new HashSet<>();
+    public static HashSet<String> auctionResult = new HashSet<>();
     //Set bid limit for new Customers
-    public final int BidLimit =500;
+    public static final int bidLimit =500;
     public static void main(String[] args) {
         System.out.println("Welcome to Online Auction Solutions!");
-        //customer registration {Ci : Ci , OAS, OAH}
-        //customer with reference
-        Customer customer1 = new Customer( "A","Alice","Good Customer","OAH-B");
         //new customer with no reference
-        Customer customer2 = new Customer( "B","Bob","New Customer",null);
+        Customer customer1 = new Customer( "A","Alice","New Customer",null);
+        //new customer with reference
+        Customer customer2 = new Customer( "B","Bob","Good Customer","OAH-B");
         //old customer with no reference
         Customer customer3 = new Customer( "C","Charlie","Good Customer",null);
-        //Product Details {OAS : OAS}
-        Product product = new Product("item1",500,50);
+        //customer registration {Ci : Ci , OAS, OAH}
+        customerDB.add(customer1);
+        customerDB.add(customer2);
+        customerDB.add(customer3);
+        //Add Product Details {OAS : OAS}
+        Product product = new Product(500,50);
+        productDB.put("item1",product);
         //commission bids of customer A and B {C: C,A}
         Map<String, Object> commissionBid1 = new HashMap<>();
         commissionBid1.put("bidderName", "A");
-        commissionBid1.put("amount", 500);
+        //check if customer is new customer then bid limit 500 else higher amount
+        //implicit flow {customer name, status ==> bid amount}
+        if (isNewCustomer((String) commissionBid1.get("bidderName")))
+            commissionBid1.put("amount", bidLimit);
+        else
+            commissionBid1.put("amount", 500);
         commissionBids.add(commissionBid1);
 
         Map<String, Object> commissionBid2 = new HashMap<>();
@@ -89,13 +95,14 @@ public class Main {
         for (Map<String, Object> commissionBid : commissionBids) {
             int amount = (int) commissionBid.get("amount");
             if (amount >= currentPrice) {
+                //implicit flow {C: A,C}
                 System.out.println("Auction house bids for " + commissionBid.get("bidderName") + ": " + currentPrice);
                 currentPrice += product.bid_rise; // Increment by step size
             }
         }
         for (Map<String, Object> liveBid : liveBids) {
             int amount = (int) liveBid.get("amount");
-            if (amount > currentPrice) {
+            if (amount > currentPrice) {//implicit flow {A, C: A,C,OAS}
                 currentPrice = amount;
                 current_owner = (String) liveBid.get("bidderName");
                 System.out.println(current_owner + " bids " + currentPrice);
@@ -104,7 +111,17 @@ public class Main {
         System.out.println("Going once... Going twice... Sold!!!!");
         // Auction Result {}
         String aucRes = "Customer:" + current_owner + " Product Price:" + currentPrice;
-        AuctionResult.add(aucRes);
+        auctionResult.add(aucRes);
         System.out.println("Auction Result::====>>> " + aucRes );
+    }
+    // Function to check if a customer is a "new customer"
+    public static boolean isNewCustomer(String bidderName) {
+        // Iterate through the customer database to find a customer with the given bidder name
+        for (Customer customer : customerDB) {
+            if (customer.name.equals(bidderName) && customer.status.equals("New Customer")) {
+                return true;
+            }
+        }
+        return false;
     }
 }
