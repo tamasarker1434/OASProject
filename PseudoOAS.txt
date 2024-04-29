@@ -1,0 +1,71 @@
+
+# Initialize customer database
+customerDB = HashSet()
+customer1 = Customer("A", "Alice", "New Customer", null)
+customer2 = Customer("B", "Bob", "Good Customer", "OAH-B")
+customer3 = Customer("C", "Charlie", "Good Customer", null)
+add customer1 to customerDB
+add customer2 to customerDB
+add customer3 to customerDB
+
+# Initialize product database
+productDB = HashMap()
+product = Product(500, 50)  # starting price, bid rise
+productDB.put("item1", product)
+
+# Initialize commission bids
+commissionBids = ArrayList()
+commissionBid1 = HashMap()
+commissionBid1.put("bidderName", "A")
+if isNewCustomer(commissionBid1.get("bidderName")) then
+    commissionBid1.put("amount", bidLimit)
+else
+    commissionBid1.put("amount", 500)
+add commissionBid1 to commissionBids
+
+commissionBid2 = HashMap()
+commissionBid2.put("bidderName", "B")
+commissionBid2.put("amount", 700)
+add commissionBid2 to commissionBids
+
+# Initialize live bids
+liveBids = ArrayList()
+liveBid1 = HashMap()
+liveBid1.put("bidderName", "C")
+liveBid1.put("amount", 600)
+add liveBid1 to liveBids
+
+liveBid2 = HashMap()
+liveBid2.put("bidderName", "C")
+liveBid2.put("amount", 700)
+add liveBid2 to liveBids
+
+liveBid3 = HashMap()
+liveBid3.put("bidderName", "C")
+liveBid3.put("amount", 750)
+add liveBid3 to liveBids
+
+# Conduct the auction
+currentPrice = product.starting_price
+for commissionBid in commissionBids do
+    amount = commissionBid.get("amount")
+    if amount >= currentPrice then
+        currentPrice += product.bid_rise
+
+for liveBid in liveBids do
+    amount = liveBid.get("amount")
+    if amount > currentPrice then
+        currentPrice = amount
+
+print("result of highest bid")
+
+# Record auction result
+auctionResult = HashSet()
+auctionResult.add(aucResult)
+
+# Function to check if a customer is a "new customer"
+function isNewCustomer(bidderName):
+    for customer in customerDB do
+        if customer.name == bidderName and customer.status == "New Customer" then
+            return true
+    return false

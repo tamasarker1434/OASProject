@@ -50,7 +50,7 @@ public class Main {
         Customer customer2 = new Customer( "B","Bob","Good Customer","OAH-B");
         //old customer with no reference
         Customer customer3 = new Customer( "C","Charlie","Good Customer",null);
-        //customer registration {Ci : Ci , OAS, OAH}
+        //customer registration {C : C , OAS, OAH}
         customerDB.add(customer1);
         customerDB.add(customer2);
         customerDB.add(customer3);
@@ -109,7 +109,7 @@ public class Main {
             }
         }
         System.out.println("Going once... Going twice... Sold!!!!");
-        // Auction Result {}
+        // Auction Result {} for public
         String aucRes = "Customer:" + current_owner + " Product Price:" + currentPrice;
         auctionResult.add(aucRes);
         System.out.println("Auction Result::====>>> " + aucRes );
