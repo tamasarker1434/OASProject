@@ -2,7 +2,7 @@ import java.util.*;
 
 public class Main {
 /**
- * Abbreviation of each owner/readers:=
+ * Abbreviation of each participants:=
  * customer = C,
  * Auction = A,
  * Online Auction Solutions = OAS,
@@ -36,27 +36,29 @@ public class Main {
     public static List<Map<String, Object>> commissionBids = new ArrayList<>();
     //Online Bids {C: C,A}
     public static List<Map<String, Object>> liveBids = new ArrayList<>();
-    //Products Details{OAS : OAS}
+    //Products Details {OAS : OAS,A,C}
     public static HashMap<String, Product> productDB = new HashMap<>();
-    //Auction Result
+    //Auction DB {OAS : OAS}
     public static HashSet<String> auctionResult = new HashSet<>();
     //Set bid limit for new Customers
     public static final int bidLimit =500;
     public static void main(String[] args) {
         System.out.println("Welcome to Online Auction Solutions!");
+        //customer registration {C,OAH : C , OAS, OAH}
         //new customer with no reference
         Customer customer1 = new Customer( "A","Alice","New Customer",null);
         //new customer with reference
         Customer customer2 = new Customer( "B","Bob","Good Customer","OAH-B");
         //old customer with no reference
         Customer customer3 = new Customer( "C","Charlie","Good Customer",null);
-        //customer registration {C : C , OAS, OAH}
+        //After successfully registration customers are added to the OAS core DB {OAS : OAS}
         customerDB.add(customer1);
         customerDB.add(customer2);
         customerDB.add(customer3);
-        //Add Product Details {OAS : OAS}
+        //Add Product Details {OAS, : OAS,A,C}
         Product product = new Product(500,50);
         productDB.put("item1",product);
+
         //commission bids of customer A and B {C: C,A}
         Map<String, Object> commissionBid1 = new HashMap<>();
         commissionBid1.put("bidderName", "A");
@@ -73,7 +75,7 @@ public class Main {
         commissionBid2.put("amount", 700);
         commissionBids.add(commissionBid2);
 
-        // Live bids of customer C {C: C,A}
+        // Live bids of customer  {C: C,A}
         Map<String, Object> liveBid1 = new HashMap<>();
         liveBid1.put("bidderName", "C");
         liveBid1.put("amount", 600);
@@ -95,7 +97,6 @@ public class Main {
         for (Map<String, Object> commissionBid : commissionBids) {
             int amount = (int) commissionBid.get("amount");
             if (amount >= currentPrice) {
-                //implicit flow {C: A,C}
                 System.out.println("Auction house bids for " + commissionBid.get("bidderName") + ": " + currentPrice);
                 currentPrice += product.bid_rise; // Increment by step size
             }
@@ -109,9 +110,10 @@ public class Main {
             }
         }
         System.out.println("Going once... Going twice... Sold!!!!");
-        // Auction Result {} for public
         String aucRes = "Customer:" + current_owner + " Product Price:" + currentPrice;
+        //Auction result is stored on core Auction DB {OAS : OAS}
         auctionResult.add(aucRes);
+        // Auction Result {⊥} for public
         System.out.println("Auction Result::====>>> " + aucRes );
     }
     // Function to check if a customer is a "new customer"
